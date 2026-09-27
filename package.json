@@ -1,0 +1,15 @@
+{
+  "name": "bizraksha",
+  "version": "1.0.0",
+  "description": "BizRaksha (Cypher) - AI-Powered CyberShield for MSMEs",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT,AI_ML\" -c \"blue,cyan,green\" \"npm run start:server\" \"npm run start:client\" \"npm run start:ai\"",
+    "start:client": "npm --prefix client run dev",
+    "start:server": "npm --prefix server run dev",
+    "start:ai": "cd ai_engine && .\\venv\\Scripts\\python run.py",
+    "install:all": "npm --prefix client install && npm --prefix server install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
