@@ -1,7 +1,7 @@
-# 🛡️ BizRaksha (Cypher: AI-Powered CyberShield for MSMEs)
+#  BizRaksha (Cypher: AI-Powered CyberShield for MSMEs)
 
 > **Vision:** *"Smart AI. Strong Security. Safer Business."*  
-## 📖 Executive Overview
+## Executive Overview
 **BizRaksha** is an intelligent, low-friction, AI-driven cybersecurity platform designed specifically for Micro, Small, and Medium Enterprises (MSMEs). MSMEs are the primary targets of ransomware, quishing, business email compromise (BEC), and data breaches, yet they are excluded from enterprise-grade SIEM/EDR platforms due to prohibitive costs and high operational complexity.
 
 BizRaksha acts as an **autonomous virtual SOC**:
