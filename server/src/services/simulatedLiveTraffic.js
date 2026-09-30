@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const { Incident, isConnected, memoryStore } = require('../config/db');
 
 const SAMPLE_EVENTS = [
   {
@@ -53,7 +53,7 @@ class SimulatedLiveTraffic {
     
     console.log('📡 Real-time simulated telemetry engine started.');
 
-    this.intervalId = setInterval(() => {
+    this.intervalId = setInterval(async () => {
       const event = SAMPLE_EVENTS[Math.floor(Math.random() * SAMPLE_EVENTS.length)];
       const livePayload = {
         ...event,
@@ -63,17 +63,18 @@ class SimulatedLiveTraffic {
 
       io.emit('telemetry_event', livePayload);
 
-      // Randomly inject an active critical incident if none are open
+      // Randomly inject an active critical incident if trigger fires
       if (event.severity === 'CRITICAL' && Math.random() > 0.6) {
+        const incidentId = 'INC-' + Math.floor(100000 + Math.random() * 900000);
         const newIncident = {
-          id: 'INC-' + Math.floor(100000 + Math.random() * 900000),
+          id: incidentId,
           title: 'Automated Isolation: ' + event.message,
           threat_type: 'DATA_EXFILTRATION_C2',
           severity: 'CRITICAL',
           status: 'OPEN',
           source_ip: event.source,
           target_asset: 'Workstation-192.168.1.108',
-          detected_at: new Date().toISOString(),
+          detected_at: new Date(),
           raw_details: event.message,
           bluf: 'CRITICAL ACTION: Authorize one-click network isolation to prevent unauthorized file exfiltration.',
           business_impact: {
@@ -84,8 +85,15 @@ class SimulatedLiveTraffic {
           remediation_status: 'PENDING'
         };
 
-        db.incidents.unshift(newIncident);
-        if (db.incidents.length > 20) db.incidents.pop();
+        try {
+          if (isConnected()) {
+            await Incident.create(newIncident);
+          } else {
+            memoryStore.incidents.unshift(newIncident);
+          }
+        } catch (err) {
+          memoryStore.incidents.unshift(newIncident);
+        }
 
         io.emit('new_incident_alert', newIncident);
       }

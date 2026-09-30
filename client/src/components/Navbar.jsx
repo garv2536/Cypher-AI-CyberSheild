@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useSecurity } from '../context/SecurityContext';
 
-export default function Navbar() {
+export default function Navbar({ setActiveTab }) {
   const { user, logout, posture, incidents, socketConnected } = useSecurity();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const openCriticals = incidents.filter(i => i.status === 'OPEN' && i.severity === 'CRITICAL').length;
@@ -38,7 +38,10 @@ export default function Navbar() {
       zIndex: 40
     }}>
       {/* Brand logo & tagline */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div 
+        onClick={() => setActiveTab && setActiveTab('dashboard')}
+        style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }}
+      >
         <div style={{
           width: '38px',
           height: '38px',
@@ -64,7 +67,7 @@ export default function Navbar() {
               background: 'rgba(59, 130, 246, 0.2)',
               color: '#60A5FA',
               border: '1px solid rgba(59, 130, 246, 0.3)'
-            }}>CYPHER AI</span>
+            }}>AI DEFENSE</span>
           </div>
           <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>AI-Powered CyberShield for MSMEs</p>
         </div>
@@ -88,12 +91,20 @@ export default function Navbar() {
         </div>
 
         {openCriticals > 0 ? (
-          <div className="badge-critical pulse-danger" style={{ cursor: 'pointer' }}>
+          <div 
+            onClick={() => setActiveTab && setActiveTab('incidents')}
+            className="badge-critical pulse-danger" 
+            style={{ cursor: 'pointer' }}
+          >
             <ShieldAlert size={14} />
             <span>{openCriticals} Critical Action{openCriticals > 1 ? 's' : ''} Needed</span>
           </div>
         ) : (
-          <div className="badge-safe">
+          <div 
+            onClick={() => setActiveTab && setActiveTab('posture')}
+            className="badge-safe"
+            style={{ cursor: 'pointer' }}
+          >
             <ShieldCheck size={14} />
             <span>Perimeter Secure</span>
           </div>

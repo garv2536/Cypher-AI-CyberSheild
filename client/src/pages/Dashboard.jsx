@@ -217,7 +217,7 @@ export default function Dashboard({ setActiveTab }) {
           </div>
 
           <div style={{ marginTop: '14px', fontSize: '0.72rem', color: 'var(--text-subtle)', textAlign: 'center' }}>
-            BizRaksha v1.0 • Cypher AI Multi-Layer Engine
+            BizRaksha v1.0 • Multi-Layer AI Engine
           </div>
         </div>
       </div>

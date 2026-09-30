@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
@@ -10,10 +11,13 @@ const threatRoutes = require('./routes/threats');
 const postureRoutes = require('./routes/posture');
 const reportRoutes = require('./routes/reports');
 const simulatedTraffic = require('./services/simulatedLiveTraffic');
-const db = require('./config/db');
+const { connectDB, isConnected, Incident, User } = require('./config/db');
 
 const app = express();
 const server = http.createServer(app);
+
+// Connect to MongoDB
+connectDB();
 
 // Initialize Socket.io with permissive CORS for local dev
 const io = new Server(server, {
@@ -36,12 +40,22 @@ app.use('/api/posture', postureRoutes);
 app.use('/api/reports', reportRoutes);
 
 // Health check JSON endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  let activeIncidents = 0;
+  let usersRegistered = 0;
+  try {
+    if (isConnected()) {
+      activeIncidents = await Incident.countDocuments();
+      usersRegistered = await User.countDocuments();
+    }
+  } catch (e) {}
+
   res.json({
     status: 'online',
     system: 'BizRaksha Central Security Orchestrator',
-    active_incidents: db.incidents.length,
-    users_registered: db.users.length,
+    database: isConnected() ? 'MongoDB Connected' : 'Disconnected / Connecting',
+    active_incidents: activeIncidents,
+    users_registered: usersRegistered,
     timestamp: new Date().toISOString()
   });
 });

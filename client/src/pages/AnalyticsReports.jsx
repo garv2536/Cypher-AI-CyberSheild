@@ -83,7 +83,7 @@ export default function AnalyticsReports() {
                 <span style={{ fontSize: '1.4rem', fontWeight: 800 }}>
                   Biz<span style={{ color: '#38BDF8' }}>Raksha</span>
                 </span>
-                <span className="badge-safe" style={{ fontSize: '0.7rem' }}>CYPHER DEFENSE SUITE</span>
+                <span className="badge-safe" style={{ fontSize: '0.7rem' }}>AI DEFENSE SUITE</span>
               </div>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '6px' }}>
                 Executive Cybersecurity Health & Incident Audit Briefing

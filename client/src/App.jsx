@@ -53,13 +53,17 @@ function AppContent() {
           fontWeight: 600,
           zIndex: 50
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div 
+            onClick={() => setActiveTab('incidents')}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flex: 1 }}
+          >
             <AlertCircle size={18} />
             <span>{activeNotification.title} — {activeNotification.message}</span>
+            <span style={{ textDecoration: 'underline', marginLeft: '8px', fontSize: '0.78rem', color: '#FECACA' }}>View Incident →</span>
           </div>
           <button
             onClick={() => setActiveNotification(null)}
-            style={{ background: 'transparent', border: 'none', color: '#FFF', cursor: 'pointer' }}
+            style={{ background: 'transparent', border: 'none', color: '#FFF', cursor: 'pointer', padding: '4px' }}
           >
             <X size={16} />
           </button>
@@ -67,7 +71,7 @@ function AppContent() {
       )}
 
       {/* Main Top Navbar with User Profile & Logout */}
-      <Navbar />
+      <Navbar setActiveTab={setActiveTab} />
 
       {/* Main Layout Area */}
       <div style={{ display: 'flex', flex: 1 }}>

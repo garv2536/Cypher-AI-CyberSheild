@@ -1,29 +1,53 @@
-const db = require('../config/db');
+const { User, Incident, Posture, isConnected, memoryStore } = require('../config/db');
 
 exports.generateExecutiveReport = async (req, res) => {
   try {
-    const user = db.users[0];
-    const totalIncidents = db.incidents.length;
-    const resolvedCount = db.incidents.filter(i => i.status === 'CONTAINED').length;
-    const openCritical = db.incidents.filter(i => i.status === 'OPEN' && i.severity === 'CRITICAL').length;
+    let user = null;
+    let incidents = [];
+    let posture = null;
+
+    if (isConnected()) {
+      user = (await User.findOne()) || {
+        name: 'Priya Sharma (Owner)',
+        company: 'Vanguard Auto Components Pvt Ltd'
+      };
+      incidents = await Incident.find().lean();
+      posture = (await Posture.findOne().sort({ createdAt: -1 })) || {
+        score: 67,
+        grade: 'C (Vulnerable / Gaps Identified)',
+        nist_alignment: { IDENTIFY: 70, PROTECT: 65, DETECT: 80, RESPOND: 60, RECOVER: 55 }
+      };
+    } else {
+      user = memoryStore.users[0] || {
+        name: 'Priya Sharma (Owner)',
+        company: 'Vanguard Auto Components Pvt Ltd'
+      };
+      incidents = memoryStore.incidents;
+      posture = memoryStore.postureState;
+    }
+
+    const totalIncidents = incidents.length;
+    const resolvedCount = incidents.filter(i => i.status === 'CONTAINED' || i.status === 'RESOLVED').length;
+    const openCritical = incidents.filter(i => i.status === 'OPEN' && i.severity === 'CRITICAL').length;
+    const criticalIncidents = incidents.filter(i => i.severity === 'CRITICAL');
 
     const report = {
       report_id: 'RPT-EXECUTIVE-' + Date.now(),
       generated_at: new Date().toISOString(),
       company: user.company,
       prepared_for: user.name,
-      security_posture_score: db.postureState.score,
-      posture_grade: db.postureState.grade,
+      security_posture_score: posture.score,
+      posture_grade: posture.grade,
       kpis: {
         total_incidents_logged: totalIncidents,
         contained_threats: resolvedCount,
         open_critical_alerts: openCritical,
         estimated_financial_loss_prevented: '₹28,40,000'
       },
-      nist_csf_summary: db.postureState.nist_alignment || {
+      nist_csf_summary: posture.nist_alignment || {
         IDENTIFY: 70, PROTECT: 65, DETECT: 80, RESPOND: 60, RECOVER: 55
       },
-      critical_incidents: db.incidents.filter(i => i.severity === 'CRITICAL'),
+      critical_incidents: criticalIncidents,
       actionable_executive_priorities: [
         'Enforce mandatory FIDO2 hardware MFA on all corporate email accounts.',
         'Schedule weekly immutable cloud backups for accounting databases.',

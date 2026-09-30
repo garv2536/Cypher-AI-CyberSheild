@@ -104,7 +104,7 @@ export default function Login() {
             Biz<span style={{ color: '#38BDF8' }}>Raksha</span>
           </h1>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Cypher: AI-Powered CyberShield for MSMEs
+            AI-Powered CyberShield for MSMEs
           </p>
         </div>
 

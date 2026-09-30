@@ -1,7 +1,7 @@
 {
   "name": "bizraksha",
   "version": "1.0.0",
-  "description": "BizRaksha (Cypher) - AI-Powered CyberShield for MSMEs",
+  "description": "BizRaksha - AI-Powered CyberShield for MSMEs",
   "scripts": {
     "dev": "node banner.js && concurrently -n \"SERVER,CLIENT,AI_ML\" -c \"blue,cyan,green\" \"npm run start:server\" \"npm run start:client\" \"npm run start:ai\"",
     "start:client": "npm --prefix client run dev",

@@ -1,5 +1,5 @@
 const aiService = require('../services/aiService');
-const db = require('../config/db');
+const { ScanLog, isConnected, memoryStore } = require('../config/db');
 
 exports.scanUrl = async (req, res) => {
   try {
@@ -7,19 +7,25 @@ exports.scanUrl = async (req, res) => {
     if (!url) return res.status(400).json({ success: false, message: 'URL is required' });
 
     const result = await aiService.scanUrl(url);
+    const scanId = 'SCAN-' + Date.now();
 
     const scanRecord = {
-      id: 'SCAN-' + Date.now(),
+      id: scanId,
       type: 'URL',
       target: url,
       risk_score: result.risk_score,
       verdict: result.verdict,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
       details: result
     };
-    db.scanLogs.unshift(scanRecord);
 
-    return res.status(200).json({ success: true, data: result, scanId: scanRecord.id });
+    if (isConnected()) {
+      await ScanLog.create(scanRecord);
+    } else {
+      memoryStore.scanLogs.unshift(scanRecord);
+    }
+
+    return res.status(200).json({ success: true, data: result, scanId });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
@@ -37,18 +43,24 @@ exports.scanQR = async (req, res) => {
       submodule_size
     });
 
+    const scanId = 'SCAN-' + Date.now();
     const scanRecord = {
-      id: 'SCAN-' + Date.now(),
+      id: scanId,
       type: 'QR_CODE',
       target: qr_data,
       risk_score: result.quishing_risk_score,
       verdict: result.verdict,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
       details: result
     };
-    db.scanLogs.unshift(scanRecord);
 
-    return res.status(200).json({ success: true, data: result, scanId: scanRecord.id });
+    if (isConnected()) {
+      await ScanLog.create(scanRecord);
+    } else {
+      memoryStore.scanLogs.unshift(scanRecord);
+    }
+
+    return res.status(200).json({ success: true, data: result, scanId });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
@@ -111,5 +123,14 @@ exports.scanEmailText = async (req, res) => {
 };
 
 exports.getScanHistory = async (req, res) => {
-  return res.status(200).json({ success: true, data: db.scanLogs.slice(0, 25) });
+  try {
+    if (isConnected()) {
+      const scans = await ScanLog.find().sort({ timestamp: -1 }).limit(25).lean();
+      return res.status(200).json({ success: true, data: scans });
+    } else {
+      return res.status(200).json({ success: true, data: memoryStore.scanLogs.slice(0, 25) });
+    }
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
 };

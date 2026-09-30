@@ -1,4 +1,4 @@
-#  BizRaksha (Cypher: AI-Powered CyberShield for MSMEs)
+# 🛡️ BizRaksha - AI-Powered CyberShield for MSMEs
 
 > **Vision:** *"Smart AI. Strong Security. Safer Business."*  
 ## Executive Overview
