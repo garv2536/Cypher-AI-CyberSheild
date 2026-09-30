@@ -89,7 +89,8 @@ export const SecurityProvider = ({ children }) => {
     refreshData();
 
     // Setup Socket.io
-    const socket = io('http://localhost:5000', {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    const socket = io(backendUrl, {
       reconnectionAttempts: 5,
       timeout: 3000
     });
